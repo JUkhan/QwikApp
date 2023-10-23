@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+//datasource db {
+//  provider = "sqlite"
+//  url      = env("DATABASE_URL_SQLITE")
+//}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL_MYSQL")
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String  @unique
+  phone String
+  password String
+  rules String
+  transactions Transaction[]
+}
+
+model Transaction {
+  id    Int     @id @default(autoincrement())
+  recipientName String
+  recipientPhone String 
+  recipientEmail String?
+  recipientCity String
+  amount Float
+  availableAmount Float
+  code String @unique
+  status String
+  paymentMethod String
+  statement String @db.VarChar(1000)
+  serviceId Int?
+  referenceNo String? 
+  createdAt DateTime
+  updatedAt DateTime
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+}
+
+model Charge {
+  id    Int     @id @default(autoincrement())
+  amount String @unique
+  cost Float
+}
+
+model Service {
+  id    Int     @id @default(autoincrement())
+  name String @unique
+  type String?
+  description String?
+  contact String?
+  city String?
+  address String?
+  mediaLink String?
+}
+
+model Faq {
+   id    Int     @id @default(autoincrement())
+   who String
+   what String
+}
+
+
