@@ -79,6 +79,6 @@ export const getUser = (request: RequestEventAction<any>) => {
 }
 
 export const DeletedMessage='Deleted Successfully';
-export const SavedMessage='Deleted Successfully';
+export const SavedMessage='Saved Successfully';
 export const ConfirmedTitle='Confirm Delete'
 export const ConfirmedMessage='Are you sure you want to delete?';

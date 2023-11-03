@@ -22,7 +22,6 @@ const ServiceSchema = object({
 type ServiceForm = Input<typeof ServiceSchema>;
 
 const save = server$(async (data: ServiceForm, id: number) => {
-  console.log('::service::', data);
   if(id){
     const service = await prisma.service.update({where:{id}, data});
     return service;
