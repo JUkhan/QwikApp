@@ -1,14 +1,11 @@
-import { component$, Slot, useContextProvider, useStore, useStyles$ } from "@builder.io/qwik";
+import { component$, Slot, useContext, useStyles$, useTask$ } from "@builder.io/qwik";
 import { routeLoader$ } from "@builder.io/qwik-city";
 import type { RequestHandler } from "@builder.io/qwik-city";
 import Menu from "~/components/menu/menu";
-
-
 import styles from "./styles.css?inline";
-import type { AppState } from "~/lib/users";
-import { AppContext, getUser } from "~/lib/users";
+import {  AppContext, getUser } from "~/lib/users";
 import Toast from "~/components/Toast/Toast";
-
+import ImgGift from '~/media/gift.jpg?jsx';
 export const onGet: RequestHandler = async ({ cacheControl }) => {
   // Control caching for this request for best performance and to reduce hosting costs:
   // https://qwik.builder.io/docs/caching/
@@ -31,11 +28,13 @@ export const useGetUser = routeLoader$(async (request) => {
 });
 
 export default component$(() => {
-
-  useContextProvider(AppContext, useStore<AppState>({
-    toast: { type: 'info' }
-  }, { deep: false }));
   const user = useGetUser();
+  const state = useContext(AppContext);
+  useTask$(({track})=>{
+      track(()=>user.value)
+      state.user = user.value as any;
+  });
+ 
   useStyles$(styles);
   return (
     <>
@@ -50,24 +49,23 @@ export default component$(() => {
               </label>
             </div>
             <div class="flex-1 px-2 mx-2">
-              <img width={50} height={50} class="mask mask-diamond" src="/gift.jpg" alt="cool" />
-
+              <ImgGift class="w-12 h-12 mask mask-pentagon" />
             </div>
             <div class="flex-none hidden lg:block">
               <ul class="menu menu-horizontal">
-                <Menu rules={user.value?.rules} />
+                <Menu/>
               </ul>
             </div>
           </div>
-          <div class="flex justify-center p-10">
-            <Toast />
-            <Slot />
+          <div class="flex justify-center">
+            <Toast/>
+            <Slot/>
           </div>
         </div>
         <div class="drawer-side">
           <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"></label>
           <ul class="menu p-4 w-80 min-h-full bg-base-200">
-            <Menu rules={user.value?.rules} />
+            <Menu/>
           </ul>
         </div>
       </div>

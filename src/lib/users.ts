@@ -1,4 +1,4 @@
-import { createContextId } from "@builder.io/qwik";
+import { createContextId, QRL } from "@builder.io/qwik";
 import prisma from "./prismaClient";
 import { v4 } from 'uuid';
 import { RequestEventAction } from "@builder.io/qwik-city";
@@ -15,7 +15,15 @@ export enum UserRules {
 }
 
 export interface AppState {
-  toast: { type: 'info' | 'success' | 'error', msg?: string }
+  toast: { type: 'info' | 'success' | 'error', msg?: string },
+  user?:{id:number, name:string, email:string, rules:string}
+  theme:string,
+  sideBarOpened:boolean,
+  DynamicCom:any,
+  formData:any,
+  show:QRL<(this: AppState) => void>,
+  hide:QRL<(this: AppState) => void>
+  activeMenu:string
 }
 
 export const AppContext = createContextId<AppState>('app.gift.context');
@@ -69,3 +77,8 @@ export const getUser = (request: RequestEventAction<any>) => {
   const name = session.user.name;
   return prisma.user.findUnique({ where: { name } });
 }
+
+export const DeletedMessage='Deleted Successfully';
+export const SavedMessage='Deleted Successfully';
+export const ConfirmedTitle='Confirm Delete'
+export const ConfirmedMessage='Are you sure you want to delete?';

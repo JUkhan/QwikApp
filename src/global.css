@@ -19,9 +19,59 @@
 }
 
 .include {
-  @apply alert alert-info alert-success alert-error
+  @apply alert alert-success
 }
 
 .transaction-width {
   width: 520px;
+}
+
+.savebtn{
+  margin-left: 10px;
+}
+.cancelbtn{
+  margin-left: 10px;
+}
+
+.formContainer{
+  @apply flex flex-col h-screen
+}
+.formHeader{
+  @apply text-lg font-bold truncate p-2 pl-5 border-b border-stone-300
+}
+.formBody{
+  @apply flex-auto justify-stretch border-t p-5 space-y-0 overflow-y-auto
+}
+.formFooter{
+  @apply absolute bottom-16
+}
+.formFooter div{
+  @apply flex justify-end border-t border-stone-300 p-2 pb-4 pr-5
+}
+.formBtnCancel{
+  @apply btn btn-sm btn-ghost mr-4
+}
+.formBtnSave{
+  @apply btn btn-sm btn-primary
+}
+.formInput{
+  @apply input input-bordered input-sm input-primary w-full
+}
+.formTextArea{
+  @apply textarea textarea-primary w-full
+}
+.formSelect{
+  @apply select select-primary select-sm w-full
+}
+.formError{
+  @apply text-red-700 text-xs
+}
+.formLabel{
+  @apply label
+}
+.formLabel span{
+  @apply label-text
+}
+.menuButton{
+  @apply mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52
 }

@@ -1,12 +1,15 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, useContextProvider, useStore, $ } from "@builder.io/qwik";
 import {
   QwikCityProvider,
   RouterOutlet,
   ServiceWorkerRegister,
 } from "@builder.io/qwik-city";
 import { RouterHead } from "./components/router-head/router-head";
+import type { AppState } from "~/lib/users";
+import { AppContext } from "~/lib/users";
 
 import "./global.css";
+import Empty from "./components/empty/empty";
 
 export default component$(() => {
   /**
@@ -15,7 +18,23 @@ export default component$(() => {
    *
    * Don't remove the `<head>` and `<body>` elements.
    */
+  const state = useStore<AppState>({
+    toast: { type: 'info' },
+    theme:'cupcake',
+    sideBarOpened:false,
+    DynamicCom:Empty,
+    show: $(function (this: AppState) {
+      this.sideBarOpened=true;
+    }),
+    hide: $(function (this: AppState) {
+      this.sideBarOpened=false;
+      this.DynamicCom= Empty;
+    }),
+    formData:{},
+    activeMenu:''
+  }, { deep: false });
 
+  useContextProvider(AppContext, state);
   return (
     <QwikCityProvider>
       <head>
@@ -24,7 +43,7 @@ export default component$(() => {
         <RouterHead />
         <ServiceWorkerRegister />
       </head>
-      <body lang="en" data-theme="cupcake">
+      <body lang="en" data-theme={state.theme}>
         <RouterOutlet />
       </body>
     </QwikCityProvider>

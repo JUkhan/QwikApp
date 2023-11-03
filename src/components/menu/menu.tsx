@@ -1,61 +1,88 @@
-import { component$ } from "@builder.io/qwik";
+// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { component$, useContext, $ } from "@builder.io/qwik";
 import { Form, Link } from "@builder.io/qwik-city";
-import { UserRules } from "~/lib/users";
+import { AppContext, UserRules } from "~/lib/users";
 
 import { useAuthSignout } from "~/routes/plugin@auth";
 
 
-export default component$<{ rules?: string }>(({ rules }) => {
+export default component$(() => {
     const logoutAction = useAuthSignout();
-    //const loggedIn = useAuthSession();
-    const user = rules === UserRules.user ? <li>
-        <details>
-            <summary>User</summary>
-            <ul class="w-40 z-50">
-                <li>
-                    <Link href="/user/service">Services</Link>
-                </li>
-                <li>
-                    <Link href="/user/status">Gift Status</Link>
-                </li>
-                <li>
-                    <Link href="/user/transaction">Make A Gift</Link>
-                </li>
-            </ul>
-        </details>
-    </li> : null;
-    const admin = rules === UserRules.admin ? <li>
-        <details>
-            <summary>Admin</summary>
-            <ul class="w-40 z-50">
-                <li>
-                    under construction...
-                </li>
-                
-            </ul>
+    const state = useContext(AppContext)
+    const setActiveMenu = $((val)=>{
+        state.activeMenu=val;
+    });
+    const user = state.user?.rules ? <div class="dropdown dropdown-end">
+        <label tabindex="0" class="btn btn-ghost btn-sm">
+            User
+        </label>
+        <ul tabindex="0" class="menuButton">
+            <li onClick$={()=>setActiveMenu('u1')}>
+                <Link class={{active:state.activeMenu==='u1'}} href="/user/service">Services</Link>
+            </li>
+            <li onClick$={()=>setActiveMenu('u2')}>
+                <Link class={{active:state.activeMenu==='u2'}} href="/user/status">Gift Status</Link>
+            </li>
+            <li onClick$={()=>setActiveMenu('u3')}>
+                <Link class={{active:state.activeMenu==='u3'}} href="/user/transaction">Make A Gift</Link>
+            </li>
+        </ul>
+    </div> : null;
+    const admin = state.user?.rules === UserRules.admin ? <div class="dropdown dropdown-end">
+        <label tabindex="1" class="btn btn-ghost btn-sm">
+            Admin
+        </label>
+        <ul tabindex="1" class="menuButton">
+            <li onClick$={()=>setActiveMenu('a1')}>
+                <Link class={{active:state.activeMenu==='a1'}} href="/admin/service">Services</Link>
+            </li>
 
-        </details>
-    </li> : null;
+        </ul>
+    </div> : null;
+    const setTheme = $((theme)=>{
+        state.theme=theme;
+    });
+
     return (
         <>
-            {user}
             {admin}
-            {rules ? <li>
+            {user}
+            <div class="dropdown dropdown-end">
+                <label tabindex="2" class="btn btn-ghost btn-sm">
+                    Themes
+                </label>
+                <ul tabindex="3" class="menuButton">
+                    <li  onClick$={()=>setTheme('light')}>
+                       <Link class={{'active':state.theme==='light'}}>Light</Link>
+                    </li>
+                    <li onClick$={()=>setTheme('cupcake')}>
+                        <Link class={{'active':state.theme==='cupcake'}}>Cupcake</Link>
+                    </li>
+                    <li onClick$={()=>setTheme('valentine')}>
+                     <Link class={{'active':state.theme==='valentine'}}>Valentine</Link>
+                    </li>
+
+                </ul>
+            </div>
+            {state.user ? 
                 <Form>
-                    <button
+                    <button class="btn btn-ghost btn-sm"
                         preventdefault: click
                         onClick$={() => {
                             logoutAction.submit({
                                 callbackUrl: '/'
+                            }).then(() => {
+                                state.user = undefined;
                             });
                         }
                         }
                     >SignOut</button>
                 </Form>
-            </li> :
+             :
                 <>
-                    <li><Link href="/signup">SignUp</Link></li>
-                    <li><Link href="/auth/signin">SignIn</Link></li>
+                    <button class="btn btn-ghost btn-sm"><Link href="/signup">SignUp</Link></button>
+                    <button class="btn btn-ghost btn-sm"><Link href="/auth/signin">SignIn</Link></button>
                 </>
             }
 

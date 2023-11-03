@@ -113,7 +113,7 @@ export default component$(() => {
                         <label>
                             Statement
                         </label>
-                        <textarea rows={5} name="statement" value={createUserAction.formData?.get("statement")} class="textarea textarea-primary  w-full" placeholder="statement"></textarea>
+                        <textarea rows={5} name="statement" value={createUserAction.formData?.get("statement")} class="textarea textarea-primary w-full" placeholder="statement"></textarea>
 
                         {createUserAction.value?.failed && <p class="text-red-700 text-xs">{createUserAction.value.fieldErrors.statement}</p>}
 

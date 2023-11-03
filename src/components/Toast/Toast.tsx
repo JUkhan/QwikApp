@@ -6,10 +6,10 @@ export default component$(() => {
   const state = useContext(AppContext);
   const type = `alert alert-${state.toast.type}`
   useVisibleTask$(({ cleanup, track }) => {
-    track(() => state.toast.type);
+    track(() => state.toast);
     if (state.toast.msg) {
       const interval = setInterval(() => {
-        state.toast.msg=''
+        state.toast={type:'info'}
       }, 3000);
       cleanup(() => clearInterval(interval));
     }
