@@ -3,7 +3,7 @@ import { $, type QRL, component$, useContext, useSignal } from '@builder.io/qwik
 import type { SubmitHandler } from '@modular-forms/qwik';
 import { useForm, valiForm$ } from '@modular-forms/qwik';
 import {  type Input, minLength, object, string } from 'valibot';
-import { AppContext, SavedMessage } from "~/lib/users";
+import { AppContext, AddedMessage, UpdatedMessage } from "~/lib/users";
 import prisma from "~/lib/prismaClient";
 import { server$ } from '@builder.io/qwik-city';
 
@@ -41,9 +41,10 @@ export default component$(() => {
   });
   
   const handleSubmit: QRL<SubmitHandler<ServiceForm>> = $(async (data: ServiceForm) => {
-    const res= await save(data, state.formData.id);
+    const id =state.formData.id;
+    const res= await save(data, id);
     state.formData=res;
-    state.toast={type:'success', msg:SavedMessage};
+    state.toast={type:'success', msg:id?UpdatedMessage:AddedMessage};
     state.hide();
   });
 

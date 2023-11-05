@@ -20,7 +20,7 @@ export default component$(() => {
    */
   const state = useStore<AppState>({
     toast: { type: 'info' },
-    theme:'cupcake',
+    theme:'valentine',
     sideBarOpened:false,
     DynamicCom:Empty,
     show: $(function (this: AppState) {

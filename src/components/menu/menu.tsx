@@ -56,9 +56,6 @@ export default component$(() => {
                     <li  onClick$={()=>setTheme('light')}>
                        <Link class={{'active':state.theme==='light'}}>Light</Link>
                     </li>
-                    <li onClick$={()=>setTheme('cupcake')}>
-                        <Link class={{'active':state.theme==='cupcake'}}>Cupcake</Link>
-                    </li>
                     <li onClick$={()=>setTheme('valentine')}>
                      <Link class={{'active':state.theme==='valentine'}}>Valentine</Link>
                     </li>

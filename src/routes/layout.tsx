@@ -6,6 +6,8 @@ import styles from "./styles.css?inline";
 import {  AppContext, getUser } from "~/lib/users";
 import Toast from "~/components/Toast/Toast";
 import ImgGift from '~/media/gift.jpg?jsx';
+import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
+import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
 export const onGet: RequestHandler = async ({ cacheControl }) => {
   // Control caching for this request for best performance and to reduce hosting costs:
   // https://qwik.builder.io/docs/caching/

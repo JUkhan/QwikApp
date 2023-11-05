@@ -13,10 +13,10 @@ export default component$(() => {
     }
     return (<div class="drawer drawer-end">
         <input id="my-drawer" onChange$={(e)=>{state.sideBarOpened=e.target.checked}} checked={state.sideBarOpened} type="checkbox" class="drawer-toggle" />
-        <div class="drawer-content flex justify-center">
+        <div class="drawer-content flex flex-col justify-center">
             <Slot />
         </div>
-        <div class="drawer-side" style={{marginTop:'4.5rem'}}>
+        <div class="drawer-side mt-16">
             <label aria-label="close sidebar" class="drawer-overlay"></label>
             <div class="w-1/3 min-h-full bg-base-200 text-base-content">
                <state.DynamicCom/>
