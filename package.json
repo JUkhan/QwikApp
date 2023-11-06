@@ -39,6 +39,7 @@
     "@types/eslint": "^8.44.4",
     "@types/express": "^4.17.19",
     "@types/node": "^20.8.4",
+    "@types/nodemailer": "^6.4.13",
     "@types/uuid": "^9.0.6",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
     "@typescript-eslint/parser": "^6.7.5",
@@ -62,6 +63,7 @@
   "dependencies": {
     "@modular-forms/qwik": "^0.21.0",
     "ag-grid-community": "^30.2.1",
+    "nodemailer": "^6.9.7",
     "valibot": "^0.19.0"
   }
 }

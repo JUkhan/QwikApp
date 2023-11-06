@@ -10,6 +10,11 @@ generator client {
 //  url      = env("DATABASE_URL_SQLITE")
 //}
 
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL_POSTGRESS")
+// }
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL_MYSQL")

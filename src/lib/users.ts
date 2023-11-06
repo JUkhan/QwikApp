@@ -1,8 +1,8 @@
 import { createContextId, QRL } from "@builder.io/qwik";
 import prisma from "./prismaClient";
 import { v4 } from 'uuid';
-import { RequestEventAction } from "@builder.io/qwik-city";
-
+import { RequestEventAction, server$ } from "@builder.io/qwik-city";
+import nodemailer from 'nodemailer';
 export interface User {
   username: string;
   password: string;
@@ -83,3 +83,35 @@ export const AddedMessage='Added Successfully';
 export const UpdatedMessage='Updated Successfully';
 export const ConfirmedTitle='Confirm Delete'
 export const ConfirmedMessage='Are you sure you want to delete?';
+
+export const sendMail=server$(async function sendMail(data: any){
+  const test =  await nodemailer.createTestAccount();
+ 
+  const transporter = await nodemailer.createTransport({
+    host:test.smtp.host,
+    port:test.smtp.port,
+    secure:test.smtp.secure,
+    //service: 'gmail',
+    auth: {
+      user: test.user, //process.env.AUTH_SECRET
+      pass: test.pass
+    }
+  });
+  
+  const mailOptions = {
+    from: 'jasim.uddin.khan@gmail.com', 
+    to: data.recipientEmail,
+    subject: 'Message from Gift system',
+    //text: 'That was easy!',
+    html:`<h1>Welcome!</h1><p>Your Gift code is(<b>${data.code}</b>)</p>`
+  };
+  
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+
+})

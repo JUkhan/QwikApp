@@ -1,8 +1,8 @@
 //@ts-nocheck
 import { component$, useContext, useSignal, useVisibleTask$ } from "@builder.io/qwik";
-import { routeAction$, zod$, z, Form, routeLoader$, } from "@builder.io/qwik-city";
+import { routeAction$, zod$, z, Form, routeLoader$ } from "@builder.io/qwik-city";
 import prisma from "~/lib/prismaClient";
-import { AppContext, getAvailableAmount, getUniqueCode, getUser, Status } from "~/lib/users";
+import { AppContext, getAvailableAmount, getUniqueCode, getUser, Status, sendMail } from "~/lib/users";
 
 
 export const useCreateUser = routeAction$(
@@ -14,6 +14,9 @@ export const useCreateUser = routeAction$(
             const transaction = await prisma.transaction.create({
                 data: { ...data, serviceId: +data.serviceId, code, status: Status.submitted, createdAt: new Date(), updatedAt: new Date(), amount: +data.amount, userId: user.id, availableAmount: getAvailableAmount(chargeList, +data.amount) }
             });
+            if(transaction.recipientEmail){
+               sendMail(transaction);
+            }
             return {
                 type: 'success',
                 msg: 'Transaction has been submitted successfully',

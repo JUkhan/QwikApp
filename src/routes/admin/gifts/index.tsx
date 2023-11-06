@@ -2,13 +2,12 @@
 import { component$, $, useContext } from "@builder.io/qwik";
 import { routeLoader$,server$ } from "@builder.io/qwik-city";
 import prisma from "~/lib/prismaClient";
-import { AppContext, Status, UpdatedMessage, getUser } from "~/lib/users";
+import { AppContext, Status, UpdatedMessage } from "~/lib/users";
 import AgGrid from '~/components/grid/grid';
 import editForm from './edit';
 
-export const useGetData = routeLoader$(async (request) => {
-  const user = await getUser(request);
-  const gifts = await prisma.transaction.findMany({ where: { userId: user?.id } });
+export const useGetData = routeLoader$(async () => {
+  const gifts = await prisma.transaction.findMany();
   return gifts;
 });
 const colDefs = [
