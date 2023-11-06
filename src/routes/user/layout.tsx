@@ -1,7 +1,9 @@
-import { Slot, component$ } from "@builder.io/qwik";
+import { Slot, component$, useContext } from "@builder.io/qwik";
 import { useAuthSession } from "../plugin@auth";
+import { AppContext } from "~/lib/users";
 
 export default component$(() => {
+    const state = useContext(AppContext);
     const loggedIn = useAuthSession();
     if (!loggedIn.value) {
         return (<div class="alert alert-warning">
@@ -9,5 +11,16 @@ export default component$(() => {
             <span>'You are not authorized for this page.'</span>
         </div>)
     }
-    return (<div  class="bloc"><Slot /></div>);
+    return (<div class="drawer drawer-end">
+    <input id="my-drawer" onChange$={(e)=>{state.sideBarOpened=e.target.checked}} checked={state.sideBarOpened} type="checkbox" class="drawer-toggle" />
+    <div class="drawer-content flex flex-col justify-center">
+        <Slot />
+    </div>
+    <div class="drawer-side mt-16">
+        <label aria-label="close sidebar" class="drawer-overlay"></label>
+        <div class="w-1/3 min-h-full bg-base-200 text-base-content">
+           <state.DynamicCom/>
+        </div>
+    </div>
+</div>);
 });

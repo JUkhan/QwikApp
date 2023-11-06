@@ -37,6 +37,15 @@ export default component$(() => {
             <li onClick$={()=>setActiveMenu('a1')}>
                 <Link class={{active:state.activeMenu==='a1'}} href="/admin/service">Services</Link>
             </li>
+            <li onClick$={()=>setActiveMenu('a2')}>
+                <Link class={{active:state.activeMenu==='a2'}} href="/admin/charge">Charge</Link>
+            </li>
+            <li onClick$={()=>setActiveMenu('a3')}>
+                <Link class={{active:state.activeMenu==='a3'}} href="/admin/user">User</Link>
+            </li>
+            <li onClick$={()=>setActiveMenu('a4')}>
+                <Link class={{active:state.activeMenu==='a4'}} href="/admin/gifts">Gifts</Link>
+            </li>
 
         </ul>
     </div> : null;

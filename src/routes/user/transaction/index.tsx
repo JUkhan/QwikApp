@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { component$, useContext } from "@builder.io/qwik";
+import { component$, useContext, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import { routeAction$, zod$, z, Form, routeLoader$, } from "@builder.io/qwik-city";
 import prisma from "~/lib/prismaClient";
 import { AppContext, getAvailableAmount, getUniqueCode, getUser, Status } from "~/lib/users";
@@ -48,82 +48,91 @@ export default component$(() => {
     const createUserAction = useCreateUser();
     const state = useContext(AppContext)
     const services = useServices();
-    if (createUserAction.value?.type) {
-        state.toast = createUserAction.value as any;
-        if (createUserAction.value.type === 'success') {
-            return <>
-                <h3 class="alert alert-success font-bold p-4 rounded-sm">8 Digit Alpha-Numeric code  ({createUserAction.value.transaction.code}) </h3>
-                <p class="p-4 mt-4 font-extrabold border-2 transaction-width">
-                    {createUserAction.value.transaction?.statement}
-                </p>
-            </>
+    const success = useSignal<boolean>(false);
+    useVisibleTask$(({ track }) => {
+        console.log(':::', createUserAction);
+        track(() => createUserAction.value);
+        if (createUserAction.value?.type) {
+            state.toast = createUserAction.value as any;
+            success.value = createUserAction.value.type === 'success'
         }
-    }
+    });
+
     return (
         <>
-            <Form action={createUserAction} noValidate>
-                <div class="card transaction-width bg-base-100 shadow-xl">
-                    <div class="card-body">
-                        <h2 class="card-title">Make A Gift</h2>
-
-                        <label>
-                            Recipient Name
-                        </label>
-                        <input type="text" name="recipientName" value={createUserAction.formData?.get("recipientName")} placeholder="recipientName Name" class="input input-bordered input-sm input-primary w-full" />
-                        {createUserAction.value?.failed && <p class="text-red-700 text-xs">{createUserAction.value.fieldErrors.recipientName}</p>}
-                        <label>
-                            Recipient Phone
-                        </label>
-                        <input type="text" name="recipientPhone" value={createUserAction.formData?.get("recipientPhone")} placeholder="Recipient Phone" class="input input-bordered input-sm input-primary w-full" />
-                        {createUserAction.value?.failed && <p class="text-red-700 text-xs">{createUserAction.value.fieldErrors.recipientPhone}</p>}
-
-                        <label>Recipient Town / City / Village</label>
-                        <input type="text" name="recipientCity" value={createUserAction.formData?.get("recipientCity")} placeholder="Recipient Town / City / Village" class="input input-bordered input-sm input-primary w-full" />
-                        {createUserAction.value?.failed && <p class="text-red-700 text-xs">{createUserAction.value.fieldErrors.recipientCity}</p>}
-                        
-                        <label>Recipient Email</label>
-                        <input type="text" name="recipientEmail" value={createUserAction.formData?.get("recipientEmail")} placeholder="Recipient Email" class="input input-bordered input-sm input-primary w-full" />
-                        {createUserAction.value?.failed && <p class="text-red-700 text-xs">{createUserAction.value.fieldErrors.recipientEmail}</p>}
-                       
-                        <label>
-                            Amount (CAD)
-                        </label>
-                        <input type="number" name="amount" value={createUserAction.formData?.get("amount")} placeholder="amount" class="input input-bordered input-sm input-primary w-full" />
-                        {createUserAction.value?.failed && <p class="text-red-700 text-xs">{createUserAction.value.fieldErrors.amount}</p>}
-                        <label>
-                            Payment Method
-                        </label>
-                        <input type="text" name="paymentMethod" value={createUserAction.formData?.get("paymentMethod")} placeholder="Payment Method" class="input input-bordered input-sm input-primary w-full" />
-                        {createUserAction.value?.failed && <p class="text-red-700 text-xs">{createUserAction.value.fieldErrors.paymentMethod}</p>}
-
-                        <label>
-                            Service
-                        </label>
-                        <select name="serviceId" value={createUserAction.formData?.get("serviceId")} class="select select-primary select-sm w-full">
-                            <option value="">Select a service</option>
-                            {services.value.map(srv => <option key={srv.id} value={srv.id}>{srv.name}</option>)}
-                        </select>
-
-                        {createUserAction.value?.failed && <p class="text-red-700 text-xs">{createUserAction.value.fieldErrors.serviceId}</p>}
-                        <label>
-                            Reference No
-                        </label>
-                        <input type="text" name="referenceNo" value={createUserAction.formData?.get("referenceNo")} placeholder="referenceNo" class="input input-bordered input-sm input-primary w-full" />
-                        {createUserAction.value?.failed && <p class="text-red-700 text-xs">{createUserAction.value.fieldErrors.referenceNo}</p>}
-                        <label>
-                            Statement
-                        </label>
-                        <textarea rows={5} name="statement" value={createUserAction.formData?.get("statement")} class="textarea textarea-primary w-full" placeholder="statement"></textarea>
-
-                        {createUserAction.value?.failed && <p class="text-red-700 text-xs">{createUserAction.value.fieldErrors.statement}</p>}
-
-                        <div class="card-actions justify-end">
-                            <button type="submit" class="btn btn-sm btn-primary">Submit</button>
-                        </div>
-                    </div>
+            {success.value ? <div class="flex flex-row mb-5 justify-center">
+                <div class="w-1/2">
+                    <h3 class="alert alert-success font-bold p-4 rounded-sm">8 Digit Alpha-Numeric code  ({createUserAction.value.transaction.code}) </h3>
+                    <p class="p-4 mt-4 font-extrabold border-2">
+                        {createUserAction.value.transaction?.statement}
+                    </p>
                 </div>
+            </div> :
+                <div class="flex flex-row mb-5 justify-center">
+                    <Form action={createUserAction}>
+                        <div class="card transaction-width bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <h2 class="card-title">Make A Gift</h2>
 
-            </Form>
+                                <label>
+                                    Recipient Name
+                                </label>
+                                <input type="text" name="recipientName" value={createUserAction.formData?.get("recipientName")} placeholder="recipientName Name" class="input input-bordered input-sm input-primary w-full" />
+                                {createUserAction.value?.failed && <p class="text-red-700 text-xs">{createUserAction.value.fieldErrors.recipientName}</p>}
+                                <label>
+                                    Recipient Phone
+                                </label>
+                                <input type="text" name="recipientPhone" value={createUserAction.formData?.get("recipientPhone")} placeholder="Recipient Phone" class="input input-bordered input-sm input-primary w-full" />
+                                {createUserAction.value?.failed && <p class="text-red-700 text-xs">{createUserAction.value.fieldErrors.recipientPhone}</p>}
+
+                                <label>Recipient Town / City / Village</label>
+                                <input type="text" name="recipientCity" value={createUserAction.formData?.get("recipientCity")} placeholder="Recipient Town / City / Village" class="input input-bordered input-sm input-primary w-full" />
+                                {createUserAction.value?.failed && <p class="text-red-700 text-xs">{createUserAction.value.fieldErrors.recipientCity}</p>}
+
+                                <label>Recipient Email</label>
+                                <input type="text" name="recipientEmail" value={createUserAction.formData?.get("recipientEmail")} placeholder="Recipient Email" class="input input-bordered input-sm input-primary w-full" />
+                                {createUserAction.value?.failed && <p class="text-red-700 text-xs">{createUserAction.value.fieldErrors.recipientEmail}</p>}
+
+                                <label>
+                                    Amount (CAD)
+                                </label>
+                                <input type="number" name="amount" value={createUserAction.formData?.get("amount")} placeholder="amount" class="input input-bordered input-sm input-primary w-full" />
+                                {createUserAction.value?.failed && <p class="text-red-700 text-xs">{createUserAction.value.fieldErrors.amount}</p>}
+                                <label>
+                                    Payment Method
+                                </label>
+                                <input type="text" name="paymentMethod" value={createUserAction.formData?.get("paymentMethod")} placeholder="Payment Method" class="input input-bordered input-sm input-primary w-full" />
+                                {createUserAction.value?.failed && <p class="text-red-700 text-xs">{createUserAction.value.fieldErrors.paymentMethod}</p>}
+
+                                <label>
+                                    Service
+                                </label>
+                                <select name="serviceId" value={createUserAction.formData?.get("serviceId")} class="select select-primary select-sm w-full">
+                                    <option value="">Select a service</option>
+                                    {services.value.map(srv => <option key={srv.id} value={srv.id}>{srv.name}</option>)}
+                                </select>
+
+                                {createUserAction.value?.failed && <p class="text-red-700 text-xs">{createUserAction.value.fieldErrors.serviceId}</p>}
+                                <label>
+                                    Reference No
+                                </label>
+                                <input type="text" name="referenceNo" value={createUserAction.formData?.get("referenceNo")} placeholder="referenceNo" class="input input-bordered input-sm input-primary w-full" />
+                                {createUserAction.value?.failed && <p class="text-red-700 text-xs">{createUserAction.value.fieldErrors.referenceNo}</p>}
+                                <label>
+                                    Statement
+                                </label>
+                                <textarea rows={5} name="statement" value={createUserAction.formData?.get("statement")} class="textarea textarea-primary w-full" placeholder="statement"></textarea>
+
+                                {createUserAction.value?.failed && <p class="text-red-700 text-xs">{createUserAction.value.fieldErrors.statement}</p>}
+
+                                <div class="card-actions justify-end">
+                                    <button type="submit" class="btn btn-sm btn-primary">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </Form>
+                </div>}
         </>
     );
 });

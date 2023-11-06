@@ -1,5 +1,5 @@
 
-import { $, type QRL, component$, useContext, useSignal } from '@builder.io/qwik';
+import { $, type QRL, component$, useContext } from '@builder.io/qwik';
 import type { SubmitHandler } from '@modular-forms/qwik';
 import { useForm, valiForm$ } from '@modular-forms/qwik';
 import {  type Input, minLength, object, string } from 'valibot';
@@ -34,9 +34,8 @@ const save = server$(async (data: ServiceForm, id: number) => {
 
 export default component$(() => {
   const state = useContext(AppContext);
-  const initForm = useSignal(state.formData);
   const [serviceForm, { Form, Field }] = useForm<ServiceForm>({
-    loader: initForm,
+    loader:{value:state.formData},
     validate: valiForm$(ServiceSchema),
   });
   

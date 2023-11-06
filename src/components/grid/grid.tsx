@@ -1,13 +1,14 @@
 import { component$, $, useSignal, useVisibleTask$, useContext, type PropFunction, noSerialize } from "@builder.io/qwik";
 import { Grid } from "ag-grid-community";
-import { AddedMessage, AppContext, DeletedMessage, UpdatedMessage } from "~/lib/users";
+import { AddedMessage, AppContext, DeletedMessage, Status, UpdatedMessage } from "~/lib/users";
 import Toolbar from "./Toolbar";
 import { Actions } from "./actions"
 import Confirm from "./confirm";
 //const obj: { api?: GridApi } = { api: null as any };
 export default component$<GridProps>(({
     rowData, columnDefs, getRowId, pageSize = 20,
-    height = '520px', editCallback, removeCallback, showActions = true,
+    actionNames='edit,remove', actionCallback,
+    height = '600px', editCallback, removeCallback, showActions = true,
     title, addCallback, hideAddButton }) => {
     const elmRef = useSignal<HTMLElement>();
     const gridCreated = useSignal<boolean>(false);
@@ -43,6 +44,7 @@ export default component$<GridProps>(({
                         headerName: 'Actions',
                         cellRenderer: Actions,
                         cellRendererParams: {
+                            actionNames,
                             edit: (data: any) => {
                                 if (editCallback) {
                                     editCallback(data);
@@ -51,7 +53,15 @@ export default component$<GridProps>(({
                             remove: (data: any) => {
                                 state.formData = data;
                                 opened.value = true;
-                            }
+                            },
+                            commonAction:(actionName:string, data:any)=>{
+                                if(actionCallback){
+                                    actionCallback(actionName, data);
+                                }
+                            },
+                            'payment request_condition':(data:any)=>data.status===Status.verified,
+                            'verify_condition':(data:any)=>data.status===Status.submitted,
+                            'paid_condition':(data:any)=>data.status===Status.requested||data.status===Status.verified
                         }
                     })
                 }
@@ -69,6 +79,9 @@ export default component$<GridProps>(({
                     onGridReady: (event) => {
                         //obj.api = event.api;
                         api.value = noSerialize(event.api);
+                    },
+                    onGridPreDestroyed:()=>{
+                        api.value=null;
                     },
                     animateRows: true,
                     pagination: true,
@@ -105,5 +118,7 @@ export interface GridProps {
     removeCallback?: PropFunction<() => void>,
     hideAddButton?: boolean,
     height?: string,
-    showActions?: boolean
+    showActions?: boolean,
+    actionNames?:string,
+    actionCallback?: PropFunction<(actionName: string, data: any) => void>,
 }

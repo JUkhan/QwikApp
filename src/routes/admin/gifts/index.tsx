@@ -4,6 +4,7 @@ import { routeLoader$,server$ } from "@builder.io/qwik-city";
 import prisma from "~/lib/prismaClient";
 import { AppContext, Status, UpdatedMessage, getUser } from "~/lib/users";
 import AgGrid from '~/components/grid/grid';
+import editForm from './edit';
 
 export const useGetData = routeLoader$(async (request) => {
   const user = await getUser(request);
@@ -28,17 +29,24 @@ export default component$(() => {
   const gifts = useGetData();
   const state = useContext(AppContext);
   const action = $(async(actionName: string, data: any) => {
-    const updated = await updateStatus(data.id, Status.requested);
+    const status =actionName==='verify'?Status.verified:actionName==='paid'?Status.paid:'';
+    const updated = await updateStatus(data.id, status);
     state.formData = updated;
     state.toast={type:'success', msg:UpdatedMessage};
   })
+  const edit = $((data: any) => {
+    state.formData = data;
+    state.DynamicCom = editForm;
+    state.show();
+  });
   return (
     <AgGrid
       rowData={gifts.value}
       columnDefs={colDefs}
       title="Gifts"
+      editCallback={edit}
       hideAddButton={true}
-      actionNames="payment request"
+      actionNames="edit,verify,paid"
       actionCallback={action}
     />
   );
