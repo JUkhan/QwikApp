@@ -8,7 +8,7 @@ import Confirm from "./confirm";
 export default component$<GridProps>(({
     rowData, columnDefs, getRowId, pageSize = 20,
     actionNames='edit,remove', actionCallback,
-    height = '600px', editCallback, removeCallback, showActions = true,
+    editCallback, removeCallback, showActions = true,
     title, addCallback, hideAddButton }) => {
     const elmRef = useSignal<HTMLElement>();
     const gridCreated = useSignal<boolean>(false);
@@ -102,7 +102,7 @@ export default component$<GridProps>(({
     })
     return (<>
         <Toolbar title={title} hideAddButton={hideAddButton} addCallback={addCallback} />
-        <div class="ag-theme-alpine" ref={elmRef} style={{ width: '100%', height }}></div>
+        <div class="ag-theme-alpine grid" ref={elmRef} style={{width:'100%'}}></div>
         <Confirm opened={opened.value} confirmCallback={confirmCallBack} />
     </>)
 });

@@ -78,3 +78,9 @@
 .commonBtn{
   @apply btn btn-info btn-xs
 }
+.edit svg:hover, .remove svg:hover{
+  @apply fill-red-500
+}
+.grid{
+  height: calc(100vh - 112px);
+}

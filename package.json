@@ -27,7 +27,9 @@
     "prisma:migrate:prod": "prisma migrate deploy",
     "serve": "node server/entry.express",
     "start": "vite --open --mode ssr",
-    "qwik": "qwik"
+    "qwik": "qwik",
+    "prisma:inline": "cp ./node_modules/.prisma/client/*.js ./node_modules/@prisma/client",
+    "prisma:generate2": "prisma generate && npm run prisma:inline"
   },
   "devDependencies": {
     "@auth/core": "^0.13.0",
