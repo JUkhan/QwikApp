@@ -16,14 +16,14 @@ export enum UserRules {
 
 export interface AppState {
   toast: { type: 'info' | 'success' | 'error', msg?: string },
-  user?:{id:number, name:string, email:string, rules:string}
-  theme:string,
-  sideBarOpened:boolean,
-  DynamicCom:any,
-  formData:any,
-  show:QRL<(this: AppState) => void>,
-  hide:QRL<(this: AppState) => void>
-  activeMenu:string
+  user?: { id: number, name: string, email: string, rules: string }
+  theme: string,
+  sideBarOpened: boolean,
+  DynamicCom: any,
+  formData: any,
+  show: QRL<(this: AppState) => void>,
+  hide: QRL<(this: AppState) => void>
+  activeMenu: string
 }
 
 export const AppContext = createContextId<AppState>('app.gift.context');
@@ -78,40 +78,43 @@ export const getUser = (request: RequestEventAction<any>) => {
   return prisma.user.findUnique({ where: { name } });
 }
 
-export const DeletedMessage='Deleted Successfully';
-export const AddedMessage='Added Successfully';
-export const UpdatedMessage='Updated Successfully';
-export const ConfirmedTitle='Confirm Delete'
-export const ConfirmedMessage='Are you sure you want to delete?';
+export const DeletedMessage = 'Deleted Successfully';
+export const AddedMessage = 'Added Successfully';
+export const UpdatedMessage = 'Updated Successfully';
+export const ConfirmedTitle = 'Confirm Delete'
+export const ConfirmedMessage = 'Are you sure you want to delete?';
 
-export const sendMail=server$(async function sendMail(data: any){
-  const test =  await nodemailer.createTestAccount();
- 
-  const transporter = await nodemailer.createTransport({
-    host:test.smtp.host,
-    port:test.smtp.port,
-    secure:test.smtp.secure,
-    //service: 'gmail',
+export const sendMail = server$(async function sendMail(data: any) {
+
+  const config = {
+    host: process.env.SMTP_HOST,
+    port: process.env.PORT,
+    secure: false,
     auth: {
-      user: test.user, //process.env.AUTH_SECRET
-      pass: test.pass
+      user: process.env.SMTP_AUTH_USER,
+      pass: process.env.SMTP_AUTH_PASS,
     }
-  });
-  
-  const mailOptions = {
-    from: 'jasim.uddin.khan@gmail.com', 
-    to: data.recipientEmail,
-    subject: 'Message from Gift system',
-    //text: 'That was easy!',
-    html:`<h1>Welcome!</h1><p>Your Gift code is(<b>${data.code}</b>)</p>`
   };
-  
-  transporter.sendMail(mailOptions, function(error, info){
-    if (error) {
-      console.log(error);
-    } else {
-      console.log('Email sent: ' + info.response);
-    }
-  });
+  try {
+    const transporter = await nodemailer.createTransport(config as any);
+
+    const mailOptions = {
+      from: process.env.EMAIL_FROM,
+      to: data.recipientEmail,
+      subject: 'Message from Gift system',
+      //text: 'That was easy!',
+      html: `<h1>Welcome!</h1><p>Your Gift code is(<b>${data.code}</b>)</p>`
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+  } catch (ex: any) {
+    console.log(ex.message);
+  }
 
 })
